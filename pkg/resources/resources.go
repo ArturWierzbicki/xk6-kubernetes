@@ -95,9 +95,9 @@ func (c *Client) getResource(kind string, namespace string, versions ...string) 
 
 	mapping, err := c.mapper.RESTMapping(gk, versions...)
 	if mapping == nil {
-		fmt.Println("mapping for resource ", kind, " not found in namespace ", namespace)
+		fmt.Println("mapping for resource ", kind, " not found in namespace ", namespace, " with versions ", versions)
 	} else {
-		fmt.Println("mapping for resource ", kind, " found in namespace ", namespace)
+		fmt.Println("mapping for resource ", kind, " found in namespace ", namespace, " with versions ", versions)
 		fmt.Println("Resource.resource ", mapping.Resource.Resource)
 		fmt.Println("Resource.group ", mapping.Resource.Group)
 		fmt.Println("Resource.version ", mapping.Resource.Version)
