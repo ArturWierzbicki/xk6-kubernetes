@@ -6,6 +6,7 @@ import (
 	"errors"
 	"fmt"
 	"reflect"
+	"strings"
 
 	"github.com/grafana/xk6-kubernetes/pkg/utils"
 
@@ -96,8 +97,23 @@ func (c *Client) getResource(kind string, namespace string, versions ...string) 
 	if len(versions) == 0 {
 		versions = []string{"v1"}
 	}
-
 	mapping, err := c.mapper.RESTMapping(gk, versions...)
+	if strings.HasPrefix(kind, "mt-") {
+		if mapping == nil {
+			fmt.Println("mapping for resource ", kind, " not found in namespace ", namespace, " with versions ", versions)
+		} else {
+			fmt.Println("mapping for resource ", kind, " found in namespace ", namespace, " with versions ", versions)
+			fmt.Println("Resource.resource ", mapping.Resource.Resource)
+			fmt.Println("Resource.group ", mapping.Resource.Group)
+			fmt.Println("Resource.version ", mapping.Resource.Version)
+
+			fmt.Println("GroupVersionKind.Version", mapping.GroupVersionKind.Version)
+			fmt.Println("GroupVersionKind.Kind", mapping.GroupVersionKind.Kind)
+			fmt.Println("GroupVersionKind.Group", mapping.GroupVersionKind.Group)
+
+			fmt.Println("Scope.Name()", mapping.Scope.Name())
+		}
+	}
 	if err != nil {
 		return nil, err
 	}
