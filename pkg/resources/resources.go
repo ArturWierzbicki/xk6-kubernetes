@@ -93,6 +93,9 @@ func (c *Client) getResource(kind string, namespace string, versions ...string) 
 		return nil, fmt.Errorf("RESTMapper not initialized")
 	}
 
+	if len(versions) == 0 {
+		versions = []string{"v1"}
+	}
 	fmt.Println("getResource", kind, namespace, versions)
 	fmt.Println("getResourceVersions ", versions)
 	mapping, err := c.mapper.RESTMapping(gk, versions...)
