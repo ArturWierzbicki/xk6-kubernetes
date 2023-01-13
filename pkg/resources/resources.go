@@ -3,6 +3,7 @@ package resources
 
 import (
 	"context"
+	"errors"
 	"fmt"
 	"reflect"
 
@@ -86,12 +87,27 @@ func (c *Client) WithMapper(mapper meta.RESTMapper) *Client {
 
 // getResource maps kinds to api resources
 func (c *Client) getResource(kind string, namespace string, versions ...string) (dynamic.ResourceInterface, error) {
+
 	gk := schema.ParseGroupKind(kind)
 	if c.mapper == nil {
 		return nil, fmt.Errorf("RESTMapper not initialized")
 	}
 
 	mapping, err := c.mapper.RESTMapping(gk, versions...)
+	if mapping == nil {
+		fmt.Println("mapping for resource ", kind, " not found in namespace ", namespace)
+	} else {
+		fmt.Println("mapping for resource ", kind, " found in namespace ", namespace)
+		fmt.Println("Resource.resource ", mapping.Resource.Resource)
+		fmt.Println("Resource.group ", mapping.Resource.Group)
+		fmt.Println("Resource.version ", mapping.Resource.Version)
+
+		fmt.Println("GroupVersionKind.Version", mapping.GroupVersionKind.Version)
+		fmt.Println("GroupVersionKind.Kind", mapping.GroupVersionKind.Kind)
+		fmt.Println("GroupVersionKind.Group", mapping.GroupVersionKind.Group)
+
+		fmt.Println("Scope.Name()", mapping.Scope.Name())
+	}
 	if err != nil {
 		return nil, err
 	}
@@ -166,9 +182,10 @@ func (c *Client) Create(obj map[string]interface{}) (map[string]interface{}, err
 
 // Get returns an object given its kind, name and namespace
 func (c *Client) Get(kind string, name string, namespace string) (map[string]interface{}, error) {
+	fmt.Println("Get called with kind ", kind, " name ", name, " namespace ", namespace)
 	resource, err := c.getResource(kind, namespace)
 	if err != nil {
-		return nil, err
+		return nil, errors.New("c.getResource failed: " + err.Error())
 	}
 
 	resp, err := resource.Get(
